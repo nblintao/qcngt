@@ -1,1 +1,7 @@
-theme: jekyll-theme-cayman
+theme: jekyll-theme-minimal
+title: 青菜年糕汤
+description: 一周一篇，一期一会。以文会友，以友辅仁。
+logo: /assets/wechat.jpg
+show_downloads: false
+plugins:
+  - jekyll-feed
