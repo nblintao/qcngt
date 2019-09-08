@@ -6,3 +6,4 @@ show_downloads: false
 google_analytics: UA-147274890-1
 plugins:
   - jekyll-feed
+  - jekyll-sitemap
