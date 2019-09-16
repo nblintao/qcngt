@@ -1,7 +1,11 @@
-<ul>
+<ol class="index" reversed>
   {% for post in site.posts %}
     <li>
-      <a href="{{ post.url }}">{{ post.title }}</a>
+      <a href="{{ post.url }}">
+        <div>
+          {{ post.title }}
+        </div>
+      </a>
     </li>
   {% endfor %}
-</ul>
+</ol>

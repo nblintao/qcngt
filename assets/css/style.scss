@@ -2,3 +2,27 @@
 ---
 
 @import "{{ site.theme }}";
+
+body {
+    font-family: -apple-system-font,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei",Arial,sans-serif;
+}
+.content {
+    color: #333;
+    font-size: 17px;
+}
+
+.content em {
+    color: #888888;
+    font-style: normal;
+}
+
+.index li{
+    font-size: 17px;
+    list-style-type: cjk-ideographic;
+
+}
+
+.index div {
+    padding: 10px 0px;
+}
+

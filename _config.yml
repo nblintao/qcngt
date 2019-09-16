@@ -4,6 +4,8 @@ description: 一周一篇，一期一会。以文会友，以友辅仁。
 logo: /assets/wechat.jpg
 show_downloads: false
 google_analytics: UA-147274890-1
+author: 青菜年糕汤
+lang: zh-CN
 plugins:
   - jekyll-feed
   - jekyll-sitemap

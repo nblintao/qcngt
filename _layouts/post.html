@@ -2,13 +2,15 @@
 layout: default
 ---
 
-<small>{{ page.date | date: "%-d %B %Y" }}</small>
+<small>{{ page.date | date: "%Y年%-m月%-d日" }}</small>
 <h1>{{ page.title }}</h1>
 
-<p class="view">by {{ page.author | default: site.author }}</p>
+<p class="view">作者：{{ page.author | default: site.author }}</p>
 
+<div class="content">
 {{content}}
+</div>
 
-{% if page.tags %}
+<!-- {% if page.tags %}
   <small>tags: <em>{{ page.tags | join: "</em> - <em>" }}</em></small>
-{% endif %}
+{% endif %} -->
