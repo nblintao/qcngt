@@ -1,5 +1,4 @@
 ---
-layout: post
 title:  幸福了吗？
 ---
 
