@@ -6,6 +6,8 @@
 body {
     margin: 0;
     font-family: -apple-system-font,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei",Arial,sans-serif;
+    line-height: 1.6;
+    text-align: justify;
 }
 .content {
     color: #333;
@@ -13,8 +15,12 @@ body {
 }
 
 .content em {
-    color: #888888;
+    color: rgb(136, 136, 136);
     font-style: normal;
+}
+
+.content p {
+    margin-bottom: 1.6em;
 }
 
 .index li{
@@ -24,6 +30,6 @@ body {
 }
 
 .index div {
-    padding: 10px 0px;
+    padding: 4px 0px;
 }
 
