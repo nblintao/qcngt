@@ -29,7 +29,10 @@
           <img src="{{site.logo | relative_url}}" alt="Logo" />
         {% endif %}
 
-        <p><small>Copyright © {{ 'now' | date: "%Y" }} 青菜年糕汤 保留所有权利。</small></p>
+        <p><small>
+            Copyright © {{ 'now' | date: "%Y" }} 青菜年糕汤 保留所有权利。
+            <a href="/feed" class="feed"></a>
+        </small></p>
       </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
