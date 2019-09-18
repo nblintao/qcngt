@@ -1,11 +1,16 @@
 theme: jekyll-theme-minimal
 title: 青菜年糕汤
 description: 一周一篇，一期一会。以文会友，以友辅仁。
-logo: /assets/wechat.jpg
+logo: /android-chrome-512x512.png
 show_downloads: false
 google_analytics: UA-147274890-1
 author: 青菜年糕汤
 lang: zh-CN
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /android-chrome-512x512.png
 plugins:
   - jekyll-feed
   - jekyll-sitemap
