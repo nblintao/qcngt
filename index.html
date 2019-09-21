@@ -23,5 +23,5 @@ layout: default
 {% endfor %}
 <div>
 <small>更新于{{ site.posts.first.date | date: "%Y年%-m月%-d日" }}</small>
-<small class="counter">总计{{ char_count | divided_by: 10000.0 | round: 1 }}万字</small>
+<small class="counter">写了{{ char_count | divided_by: 10000.0 | round: 1 }}万字</small>
 </div>
