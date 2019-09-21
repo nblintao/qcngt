@@ -2,6 +2,18 @@
 layout: default
 ---
 
+{% assign post_count = 0 %}
+{% assign char_count = 0 %}
+{% for post in site.posts %}
+  {% assign post_count = post_count | plus: 1 %}
+  {% assign post_char_count = post.content | strip_html | strip_newlines | size %}
+  {% assign char_count = char_count | plus: post_char_count %}
+{% endfor %}
+<div>
+<small>{{ site.posts.first.date | date: "%Y年%-m月%-d日" }}更新</small>
+<small class="counter">写了{{ char_count | divided_by: 10000.0 | round: 1 }}万字</small>
+</div>
+
 <ol class="index" reversed>
   {% for post in site.posts %}
     <li>
@@ -14,14 +26,3 @@ layout: default
   {% endfor %}
 </ol>
 
-{% assign post_count = 0 %}
-{% assign char_count = 0 %}
-{% for post in site.posts %}
-  {% assign post_count = post_count | plus: 1 %}
-  {% assign post_char_count = post.content | strip_html | strip_newlines | size %}
-  {% assign char_count = char_count | plus: post_char_count %}
-{% endfor %}
-<div>
-<small>更新于{{ site.posts.first.date | date: "%Y年%-m月%-d日" }}</small>
-<small class="counter">写了{{ char_count | divided_by: 10000.0 | round: 1 }}万字</small>
-</div>
