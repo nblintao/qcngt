@@ -1,5 +1,5 @@
 ---
-titile: 青涩的高光时刻：国庆、颜真卿、iPhone
+title: 青涩的高光时刻：国庆、颜真卿、iPhone
 ---
 
 前几天看了中央档案馆新公布的[开国大典原始影像](http://www.saac.gov.cn/daj/gqzt/content/06/06_12.html)。虽然这几个镜头或多或少看到过，但还是挺让人感慨的。
