@@ -7,10 +7,12 @@ google_analytics: UA-147274890-1
 author: 青菜年糕汤
 lang: zh-CN
 defaults:
-  - scope:
+  -
+    scope:
       path: ""
     values:
       image: /android-chrome-512x512.png
+      comments: true
 plugins:
   - jekyll-feed
   - jekyll-sitemap
