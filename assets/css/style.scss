@@ -54,3 +54,10 @@ body {
 .clear {
     clear: both;
 }
+
+div#disqus_thread {
+    padding: 0px 10px;
+    background: whitesmoke;
+    // border-style: dashed;
+    // border-width: thin;
+}
