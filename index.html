@@ -18,11 +18,11 @@ layout: default
 <ol class="index" reversed>
   {% for post in site.posts %}
     <li>
-      <a href="{{ post.url }}">
-        <div>
+      <div>
+        <a href="{{ post.url }}">
           {{ post.title }}
-        </div>
-      </a>
+        </a>
+      </div>
     </li>
   {% endfor %}
 </ol>

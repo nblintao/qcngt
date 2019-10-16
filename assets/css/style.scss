@@ -26,7 +26,6 @@ body {
 .index li{
     font-size: 17px;
     list-style-type: cjk-ideographic;
-
 }
 
 .index div {
@@ -58,6 +57,10 @@ body {
 div#disqus_thread {
     padding: 0px 10px;
     background: whitesmoke;
-    // border-style: dashed;
-    // border-width: thin;
+}
+
+// Not change on hover or focus.
+a:hover, a:focus {
+    color:#267CB9;
+    font-weight: normal;
 }
