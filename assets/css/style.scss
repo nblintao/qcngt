@@ -59,8 +59,7 @@ div#disqus_thread {
     background: whitesmoke;
 }
 
-// Not change on hover or focus.
-a:hover, a:focus {
-    color:#267CB9;
-    font-weight: normal;
+a, a:hover, a:focus {
+    color: #267CB9;
+    font-weight: inherit;
 }
