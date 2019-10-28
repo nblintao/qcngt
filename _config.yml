@@ -13,6 +13,7 @@ defaults:
     values:
       image: /android-chrome-512x512.png
       comments: true
+      author: 青菜年糕汤
 plugins:
   - jekyll-feed
   - jekyll-sitemap
