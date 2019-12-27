@@ -1,0 +1,67 @@
+---
+layout: default
+title: “一周一篇”
+---
+
+<div id="container" style="height: 400px"></div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script type="text/javascript">
+var dom = document.getElementById("container");
+var myChart = echarts.init(dom);
+
+var oneDay = 24 * 60 * 60 * 1000;
+var init = new Date(2019, 6, 23)
+var today = new Date();
+var postDates =[
+{% for post in site.posts reversed%}
+{{ post.date | date: "new Date(%Y, %-m - 1, %-d)"}},
+{% endfor %}
+]
+var dates = [];
+var expected = [];
+var actual = [];
+var curPost = 0;
+for (var curDate = init; curDate <= today; curDate = new Date(+curDate + oneDay)) {
+    dates.push([curDate.getFullYear(), curDate.getMonth() + 1, curDate.getDate()].join('/'));
+    expected.push(Math.floor((curDate - init) / (7 * oneDay)) + 1);
+    while (curPost < postDates.length && postDates[curPost] <= curDate) {
+        curPost++;
+    }
+    actual.push(curPost);
+}
+
+option = {
+    tooltip: {
+        trigger: 'axis'
+    },
+    title: {
+        left: 'center',
+        text: '“一周一篇”',
+    },
+    xAxis: {
+        type: 'category',
+        data: dates
+    },
+    yAxis: {
+        type: 'value',
+    },
+    series: [
+        {
+            name: '目标',
+            type: 'line',
+            symbol: 'none',
+            data: expected
+        },
+        {
+            name: '现实',
+            symbol: 'none',
+            type: 'line',
+            data: actual
+        }
+    ]
+};
+
+if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+</script>
