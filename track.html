@@ -25,8 +25,8 @@ for (var curDate = new Date(init); curDate <= now;
 // Get the next date without daylight saving time mess.
 curDate = new Date(curDate.setDate(curDate.getDate() + 1))) {
     dates.push([curDate.getFullYear(), curDate.getMonth() + 1, curDate.getDate()].join('/'));
-    // Add one hour to aviod the one off caused by DST.
-    expected.push(Math.floor((curDate - init + 3600) / (7 * oneDay)) + 1);
+    // init is in summer, so (curDate - init) can only be one hour more (instead of less) than or same as a multiple of 24-hours.
+    expected.push(Math.floor((curDate - init) / (7 * oneDay)) + 1);
     while (curPost < postDates.length && postDates[curPost] <= curDate) {
         curPost++;
     }
