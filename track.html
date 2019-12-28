@@ -10,8 +10,8 @@ var dom = document.getElementById("container");
 var myChart = echarts.init(dom);
 
 var oneDay = 24 * 60 * 60 * 1000;
-var init = new Date(2019, 6, 23)
-var today = new Date();
+var init = new Date(2019, 7 - 1, 23)
+var now = new Date();
 var postDates =[
 {% for post in site.posts reversed%}
 {{ post.date | date: "new Date(%Y, %-m - 1, %-d)"}},
@@ -21,9 +21,12 @@ var dates = [];
 var expected = [];
 var actual = [];
 var curPost = 0;
-for (var curDate = init; curDate <= today; curDate = new Date(+curDate + oneDay)) {
+for (var curDate = new Date(init); curDate <= now;
+// Get the next date without daylight saving time mess.
+curDate = new Date(curDate.setDate(curDate.getDate() + 1))) {
     dates.push([curDate.getFullYear(), curDate.getMonth() + 1, curDate.getDate()].join('/'));
-    expected.push(Math.floor((curDate - init) / (7 * oneDay)) + 1);
+    // Add one hour to aviod the one off caused by DST.
+    expected.push(Math.floor((curDate - init + 3600) / (7 * oneDay)) + 1);
     while (curPost < postDates.length && postDates[curPost] <= curDate) {
         curPost++;
     }
