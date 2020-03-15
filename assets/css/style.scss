@@ -3,23 +3,50 @@
 
 @import "{{ site.theme }}";
 
+:root {
+    color-scheme: light dark;
+    --content-color: rgba(0,0,0,0.8);
+    --sub-content-color:rgba(0,0,0,0.5);
+    --background-color: rgb(255,255,255);
+    --sub-background-color: rgb(245,245,245);
+    --brand-color: #38800a;;
+    --link-color: #576b95;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --content-color: rgba(255,255,255,0.8);
+        --sub-content-color: rgba(255,255,255,0.5);
+        --background-color: rgb(35,35,35);
+        --sub-background-color: rgb(45,45,45);
+        --brand-color: rgb(81,196,113);
+        --link-color: #7d90a9;
+    }
+    .invert-when-dark {
+        filter: invert(86%) hue-rotate(180deg);
+    }
+}
+
 body {
+    background-color: var(--background-color);
+    color: var(--sub-content-color);
     margin: 0;
     font-family: -apple-system-font,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei",Arial,sans-serif;
     line-height: 1.6;
 }
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--content-color);
+}
+
 .content {
-    color: #333;
+    color: var(--content-color);
     font-size: 17px;
     text-align: justify;
 }
 
-.content em {
-    color: rgb(136, 136, 136);
-    font-style: normal;
-}
-
-.content blockquote {
+.content em, blockquote {
+    color: var(--sub-content-color);
     font-style: normal;
 }
 
@@ -44,7 +71,7 @@ body {
 }
 
 .branding {
-    color: #38800a;
+    color: var(--brand-color);
 }
 
 .date {
@@ -61,10 +88,10 @@ body {
 
 div#disqus_thread {
     padding: 0px 10px;
-    background: whitesmoke;
+    background: var(--sub-background-color);
 }
 
 a, a:hover, a:focus {
-    color: #267CB9;
+    color: var(--link-color);
     font-weight: inherit;
 }
