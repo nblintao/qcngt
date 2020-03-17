@@ -49,6 +49,10 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1.6em;
 }
 
+strong {
+    color: var(--content-color);
+}
+
 em, blockquote {
     color: var(--sub-content-color);
     font-style: normal;
