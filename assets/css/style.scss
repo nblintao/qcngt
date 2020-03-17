@@ -9,7 +9,7 @@
     --sub-content-color:rgba(0,0,0,0.5);
     --background-color: rgb(255,255,255);
     --sub-background-color: rgb(245,245,245);
-    --brand-color: #38800a;;
+    --brand-color: #38800a;
     --link-color: #576b95;
 }
 
@@ -23,7 +23,7 @@
         --link-color: #7d90a9;
     }
     .invert-when-dark {
-        filter: invert(86%) hue-rotate(180deg);
+        filter: invert(86.1%) hue-rotate(180deg);
     }
 }
 
@@ -45,13 +45,26 @@ h1, h2, h3, h4, h5, h6 {
     text-align: justify;
 }
 
-.content em, blockquote {
+.content p {
+    margin-bottom: 1.6em;
+}
+
+em, blockquote {
     color: var(--sub-content-color);
     font-style: normal;
 }
 
-.content p {
-    margin-bottom: 1.6em;
+blockquote {
+    border-left: 3px solid var(--sub-background-color);
+}
+
+code, pre {
+    color: var(--content-color);
+    border: none;
+}
+
+.highlight {
+    background-color: var(--sub-background-color);
 }
 
 .index ol {
