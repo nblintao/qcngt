@@ -11,6 +11,7 @@
     --sub-background-color: rgb(245,245,245);
     --brand-color: #38800a;
     --link-color: #576b95;
+    --invert-when-dark-filter: none;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,9 +22,7 @@
         --sub-background-color: rgb(45,45,45);
         --brand-color: rgb(81,196,113);
         --link-color: #7d90a9;
-    }
-    .invert-when-dark {
-        filter: invert(86.1%) hue-rotate(180deg);
+        --invert-when-dark-filter: invert(86.1%) hue-rotate(180deg);
     }
 }
 
@@ -67,6 +66,10 @@ code, pre {
     border: none;
 }
 
+img {
+    filter: var(--invert-when-dark-filter);
+}
+
 .highlight {
     background-color: var(--sub-background-color);
 }
@@ -106,6 +109,11 @@ code, pre {
 div#disqus_thread {
     padding: 0px 10px;
     background: var(--sub-background-color);
+}
+
+div#chart {
+    height: 400px;
+    filter: var(--invert-when-dark-filter);
 }
 
 a, a:hover, a:focus {

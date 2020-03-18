@@ -3,10 +3,10 @@ layout: default
 title: “一周一篇”
 ---
 
-<div id="container" class="invert-when-dark" style="height: 400px"></div>
+<div id="chart"></div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 <script type="text/javascript">
-var dom = document.getElementById("container");
+var dom = document.getElementById("chart");
 var myChart = echarts.init(dom);
 
 var oneDay = 24 * 60 * 60 * 1000;
