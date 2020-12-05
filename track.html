@@ -9,8 +9,8 @@ title: “一周一篇”
 var dom = document.getElementById("chart");
 var myChart = echarts.init(dom);
 
-var oneDay = 24 * 60 * 60 * 1000;
-var init = new Date(2019, 7 - 1, 23)
+var init = new Date(2019, 7 - 1, 23);
+var releaseDay = init.getDay();
 var now = new Date();
 var postDates =[
 {% for post in site.posts reversed%}
@@ -20,17 +20,28 @@ var postDates =[
 var dates = [];
 var expected = [];
 var actual = [];
-var curPost = 0;
-for (var curDate = new Date(init); curDate <= now;
-// Get the next date without daylight saving time mess.
-curDate = new Date(curDate.setDate(curDate.getDate() + 1))) {
-    dates.push([curDate.getFullYear(), curDate.getMonth() + 1, curDate.getDate()].join('/'));
-    // init is in summer, so (curDate - init) can only be one hour more (instead of less) than or same as a multiple of 24-hours.
-    expected.push(Math.floor((curDate - init) / (7 * oneDay)) + 1);
-    while (curPost < postDates.length && postDates[curPost] <= curDate) {
-        curPost++;
+var expectedCount = 0;
+var actualCount = 0;
+for (
+    var someDay = new Date(init); 
+    someDay <= now;
+    // Get the next date without daylight saving time mess.
+    someDay = new Date(someDay.setDate(someDay.getDate() + 1))
+) {
+    dates.push([someDay.getFullYear(), someDay.getMonth() + 1, someDay.getDate()].join('/'));
+
+    if (
+        someDay.getDay() == releaseDay &&
+        someDay < new Date(2020, 12 - 1, 1)
+    ) {
+        expectedCount++;
     }
-    actual.push(curPost);
+    expected.push(expectedCount);
+    
+    while (actualCount < postDates.length && postDates[actualCount] <= someDay) {
+        actualCount++;
+    }
+    actual.push(actualCount);
 }
 
 option = {
@@ -53,12 +64,14 @@ option = {
             name: '目标',
             type: 'line',
             symbol: 'none',
+            itemStyle: {color: 'rgba(0,0,0,0.5)'},
             data: expected
         },
         {
             name: '现实',
-            symbol: 'none',
             type: 'line',
+            symbol: 'none',
+            itemStyle: {color: "#38800a"},
             data: actual
         }
     ]
