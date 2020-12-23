@@ -30,18 +30,21 @@ for (
 ) {
     dates.push([someDay.getFullYear(), someDay.getMonth() + 1, someDay.getDate()].join('/'));
 
-    if (
-        someDay.getDay() == releaseDay &&
-        someDay < new Date(2020, 12 - 1, 1)
-    ) {
-        expectedCount++;
-    }
-    expected.push(expectedCount);
-    
     while (actualCount < postDates.length && postDates[actualCount] <= someDay) {
         actualCount++;
     }
     actual.push(actualCount);
+    
+    if (
+        someDay < new Date(2020, 12 - 1, 1)
+    ) {
+        if (someDay.getDay() == releaseDay) {
+            expectedCount++;
+        }
+    } else {
+        expectedCount = actualCount;
+    }
+    expected.push(expectedCount);
 }
 
 option = {
