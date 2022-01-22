@@ -2,9 +2,90 @@
 layout: default
 title: 中文互联网搜索
 ---
+<style>
+/* https://codepen.io/fidalgodev/pen/bOGaVy */
+.form__label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+  margin-left: 2rem;
+  margin-top: 0.7rem;
+  display: block;
+  transition: all 0.3s;
+  transform: translateY(0rem);
+}
+.form__input {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  font-size: 1.2rem;
+	margin: 0 auto;
+  padding: 1.5rem 2rem;
+  border-radius: 0.2rem;
+  background-color: rgb(255, 255, 255);
+  border: none;
+  width: 90%;
+  display: block;
+  border-bottom: 0.3rem solid transparent;
+  transition: all 0.3s;
+}
+.form__input:placeholder-shown + .form__label {
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transform: translateY(-4rem);
+  transform: translateY(-4rem);
+}
+</style>
 
+<form id="search-from" class="form__group">
+    <input type="text" id="search-box" class="form__input" placeholder="中文互联网搜索"/>
+</form>
+<div class="gcse-searchresults-only"></div>
+<hr>
+<iframe id="weixin-frame" width="100%" frameborder="0"></iframe>
+<p><a id="link-to-wexin"></a></p>
+<hr>
+<p>
+    <b><a href="/search">中文互联网搜索</a></b>目前包括<a href="https://www.bilibili.com">Bilibili</a>，<a href="https://www.douban.com">豆瓣</a>，<a href="https://weixin.sogou.com">微信</a>，<a href="https://www.zhihu.com">知乎</a>，由<a href="https://programmablesearchengine.google.com">谷歌可编程搜索引擎</a>和<a href="https://weixin.sogou.com">搜狗（用于搜索微信）</a>提供支持
+</p>
 
 <script async src="https://cse.google.com/cse.js?cx=aceefea86feea38d1"></script>
-<div class="gcse-search"></div>
+<script>
+    function weixinFrame() {
+        return document.getElementById("weixin-frame");
+    }
+    function executeQuery(evt) {
+      evt.preventDefault();
+      var query = document.getElementById('search-box').value;
+  
+      // Search by Google Programmable Search Engine.
+      var element = google.search.cse.element.getElement('searchresults-only0');
+      if (query == '') {
+        element.clearAllResults();
+      } else {
+        element.execute(query);
+      }
+  
+      // Search Weixin by Sogou.
+      var weixin_frame = weixinFrame();
+      var weixin_url = "https://weixin.sogou.com/weixin?type=2&query=" + encodeURIComponent(query);
+      weixin_frame.src = weixin_url;
 
-<p><b><a href="/search">中文互联网搜索</a></b>：目前包括<a href="https://www.bilibili.com">Bilibili</a>，<a href="https://www.douban.com">豆瓣</a>，<a href="https://www.zhihu.com">知乎</a>，由<a href="https://programmablesearchengine.google.com">谷歌可编程搜索引擎</a>提供支持</p>
+      var linkToWeixin = document.getElementById("link-to-wexin");
+      linkToWeixin.href = weixin_url;
+      linkToWeixin.innerHTML = " 🔍 在微信上搜索“<b>" + query + "</b>”";
+  
+      return false;
+    }
+    document.getElementById('search-from').addEventListener('submit', executeQuery);
+  
+    // TODO: Why cannot simply set width="50%" for the iframe?
+    function resetIFrameHeight() {
+      var weixin_frame = weixinFrame();
+      weixin_frame.height = window.innerHeight * 0.5;
+    }
+    window.addEventListener('resize', function(event) {
+      resetIFrameHeight()
+    }, true);
+    window.addEventListener('DOMContentLoaded', function(e) {
+      resetIFrameHeight()
+    });
+</script>
