@@ -3,35 +3,20 @@ layout: default
 title: 中文互联网搜索
 ---
 <style>
-/* https://codepen.io/fidalgodev/pen/bOGaVy */
-.form__label {
-  font-family: 'Roboto', sans-serif;
-  font-size: 1.2rem;
-  margin-left: 2rem;
-  margin-top: 0.7rem;
-  display: block;
-  transition: all 0.3s;
-  transform: translateY(0rem);
-}
+/* Adapted from https://codepen.io/fidalgodev/pen/bOGaVy */
 .form__input {
-  font-family: 'Roboto', sans-serif;
   color: #333;
   font-size: 1.2rem;
-	margin: 0 auto;
+  margin: 0 auto;
   padding: 1.5rem 2rem;
   border-radius: 0.2rem;
   background-color: rgb(255, 255, 255);
   border: none;
-  width: 90%;
+  width: 100%;
+  box-sizing: border-box;
   display: block;
   border-bottom: 0.3rem solid transparent;
   transition: all 0.3s;
-}
-.form__input:placeholder-shown + .form__label {
-  opacity: 0;
-  visibility: hidden;
-  -webkit-transform: translateY(-4rem);
-  transform: translateY(-4rem);
 }
 </style>
 
@@ -82,9 +67,9 @@ title: 中文互联网搜索
       var weixin_frame = weixinFrame();
       weixin_frame.height = window.innerHeight * 0.5;
     }
-    // window.addEventListener('resize', function(event) {
-    //   resetIFrameHeight()
-    // }, true);
+    window.addEventListener('resize', function(event) {
+      resetIFrameHeight()
+    }, true);
     window.addEventListener('DOMContentLoaded', function(e) {
       resetIFrameHeight()
     });
