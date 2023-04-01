@@ -3,57 +3,87 @@ layout: default
 title: 更新记录
 ---
 
-<div id="chart"></div>
+<div class="chart" id="postChart"></div>
+<div class="chart" id="wordChart"></div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 <script type="text/javascript">
-var dom = document.getElementById("chart");
-var myChart = echarts.init(dom);
+var postChart = echarts.init(document.getElementById("postChart"));
+var wordChart = echarts.init(document.getElementById("wordChart"));
 
 var init = new Date(2019, 7 - 1, 23);
-var releaseDay = init.getDay();
+var releaseDayOfWeek = init.getDay();
 var now = new Date();
 var postDates =[
-{% for post in site.posts reversed%}
-{{ post.date | date: "new Date(%Y, %-m - 1, %-d)"}},
-{% endfor %}
-]
+    {% for post in site.posts reversed %}
+        {{ post.date | date: "new Date(%Y, %-m - 1, %-d)"}},
+    {% endfor %}
+];
+var postWordCounts = [
+    {% for post in site.posts reversed %}
+        {{ post.content | strip_html | strip_newlines | size}},
+    {% endfor %}
+];
+
 var dates = [];
-var expected = [];
-var actual = [];
-var expectedCount = 0;
-var actualCount = 0;
+var expectedPosts = [];
+var actualPosts = [];
+var expectedWords = [];
+var actualWords = [];
+
+var expectedPostsCount = 0;
+var actualPostsCount = 0;
+var expectedWordsCount = 0;
+var actualWordsCount = 0;
 for (
     var someDay = new Date(init); 
     someDay <= now;
     // Get the next date without daylight saving time mess.
     someDay = new Date(someDay.setDate(someDay.getDate() + 1))
 ) {
-    dates.push([someDay.getFullYear(), someDay.getMonth() + 1, someDay.getDate()].join('/'));
-
-    while (actualCount < postDates.length && postDates[actualCount] <= someDay) {
-        actualCount++;
+    // Update actual.
+    while (actualPostsCount < postDates.length && postDates[actualPostsCount] <= someDay) {
+        actualWordsCount += postWordCounts[actualPostsCount];
+        actualPostsCount++;
     }
-    actual.push(actualCount);
-    
+
+    // Update expectation.
     if (
         someDay < new Date(2020, 12 - 1, 1)
     ) {
-        if (someDay.getDay() == releaseDay) {
-            expectedCount++;
+        if (someDay.getDay() == releaseDayOfWeek) {
+            expectedPostsCount++;
         }
     } else {
-        expectedCount = actualCount;
+        expectedPostsCount = actualPostsCount;
     }
-    expected.push(expectedCount);
+
+    // if (someDay < new Date()) {
+    //     expectedWordsCount = actualWordsCount;
+    // } else {
+    //     expectedWordsCount += Math.floor(1000 / 7);
+    // }
+
+    dates.push([someDay.getFullYear(), someDay.getMonth() + 1, someDay.getDate()].join('/'));
+    expectedPosts.push(expectedPostsCount);
+    actualPosts.push(actualPostsCount);
+    expectedWords.push(expectedWordsCount);
+    actualWords.push(actualWordsCount);
 }
 
-option = {
+postChartOption = {
     tooltip: {
         trigger: 'axis'
     },
     title: {
         left: 'center',
-        text: '更新记录（目前不定期）',
+        text: '文章数量统计',
+    },
+    toolbox: {
+        feature: {
+            dataZoom: {
+                yAxisIndex: 'none'
+            }
+        }
     },
     xAxis: {
         type: 'category',
@@ -61,26 +91,73 @@ option = {
     },
     yAxis: {
         type: 'value',
+        scale: true,
     },
     series: [
         {
-            name: '目标',
+            name: '文章数量（目标）',
             type: 'line',
             symbol: 'none',
             itemStyle: {color: 'rgba(0,0,0,0.5)'},
-            data: expected
+            data: expectedPosts
         },
         {
-            name: '现实',
+            name: '文章数量',
             type: 'line',
             symbol: 'none',
             itemStyle: {color: "#38800a"},
-            data: actual
+            data: actualPosts
+        }
+    ]
+};
+if (postChartOption && typeof postChartOption === "object") {
+    postChart.setOption(postChartOption, true);
+}
+
+
+wordChartOption = {
+    tooltip: {
+        trigger: 'axis'
+    },
+    title: {
+        left: 'center',
+        text: '总字数统计',
+    },
+    toolbox: {
+        feature: {
+            dataZoom: {
+                yAxisIndex: 'none'
+            }
+        }
+    },
+    xAxis: {
+        type: 'category',
+        data: dates
+    },
+    yAxis: {
+        type: 'value',
+        scale: true,
+    },
+    series: [
+        // {
+        //     name: '总字数（目标）',
+        //     type: 'line',
+        //     symbol: 'none',
+        //     itemStyle: {color: 'rgba(0,0,0,0.5)'},
+        //     data: expectedWords
+        // },
+        {
+            name: '总字数',
+            type: 'line',
+            symbol: 'none',
+            itemStyle: {color: "#38800a"},
+            data: actualWords
         }
     ]
 };
 
-if (option && typeof option === "object") {
-    myChart.setOption(option, true);
+if (wordChartOption && typeof wordChartOption === "object") {
+    wordChart.setOption(wordChartOption, true);
 }
+
 </script>

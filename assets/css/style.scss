@@ -8,7 +8,7 @@
     --content-color: rgba(0,0,0,0.8);
     --sub-content-color:rgba(0,0,0,0.5);
     --background-color: rgb(255,255,255);
-    --sub-background-color: rgb(245,245,245);
+    --sub-background-color: rgcab(245,245,245);
     --brand-color: #38800a;
     --link-color: #576b95;
     --invert-when-dark-filter: none;
@@ -111,7 +111,7 @@ div#disqus_thread {
     background: var(--sub-background-color);
 }
 
-div#chart {
+div.chart {
     height: 400px;
     filter: var(--invert-when-dark-filter);
 }
