@@ -47,7 +47,10 @@ title: 因消防检查但想睡懒觉想到的一个概率问题
 
 说了这么多，其实式子列出来其实很简单：
 
-<img src="https://latex.codecogs.com/svg.latex?T&plus;\int_T^1\frac{T}{t}dt" title="T+\int_T^1\frac{T}{t}dt" />
+$$
+T + \int_T^1\frac{T}{t}dt
+$$
+
 
 几年没碰数学，但这个积分还是行的，结果是T - T lnT。
 
