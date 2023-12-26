@@ -15,6 +15,19 @@
     <meta name="msapplication-TileColor" content="#38800a">
     <meta name="theme-color" content="#38800a">
 
+    {% assign image_name = page.path | remove: "_posts/" | remove: ".md" | append: ".JPG" %}
+    {% assign image_path = "/assets/images/" | append: image_name %}
+    {% for static_file in site.static_files %}
+      {% if static_file.path == image_path %}
+        {% assign exist_image_path = image_path %}
+      {% endif %}
+    {% endfor %}
+    {% if exist_image_path %}
+    <meta property="og:image" content="{{ site.url }}{{ exist_image_path }}">
+    {% else %}
+    <meta property="og:image" content="{{ site.url }}/android-chrome-512x512.png">
+    {% endif %}
+
 {% seo %}
     <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
     <!--[if lt IE 9]>
