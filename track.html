@@ -71,9 +71,13 @@ for (
 }
 
 var expectedWords = [];
+var show = false;
 for (var i = 0; i < dates.length; i++) {
     expectedWordsCount = Math.round(actualWordsCount - (dates.length - i - 1) / 7 * 1000);
-    if (expectedWordsCount < actualWords[i]) {
+    if (expectedWordsCount > actualWords[i]) {
+        show = true;
+    }
+    if (!show) {
         expectedWordsCount = null;
     }
     expectedWords.push(expectedWordsCount);
