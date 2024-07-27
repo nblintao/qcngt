@@ -70,6 +70,11 @@ for (
     actualWords.push(actualWordsCount);
 }
 
+var expectedWords = [];
+for (var i = 0; i < dates.length; i++) {
+    expectedWords.push(Math.round(actualWordsCount - (dates.length - i - 1) / 7 * 1000 )) ;
+}
+
 postChartOption = {
     tooltip: {
         trigger: 'axis'
@@ -144,13 +149,13 @@ wordChartOption = {
         }
     },
     series: [
-        // {
-        //     name: '总字数（目标）',
-        //     type: 'line',
-        //     symbol: 'none',
-        //     itemStyle: {color: 'rgba(0,0,0,0.5)'},
-        //     data: expectedWords
-        // },
+        {
+            name: '总字数（目标）',
+            type: 'line',
+            symbol: 'none',
+            itemStyle: {color: 'rgba(0,0,0,0.5)'},
+            data: expectedWords
+        },
         {
             name: '总字数',
             type: 'line',
