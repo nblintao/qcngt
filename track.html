@@ -137,6 +137,11 @@ wordChartOption = {
     yAxis: {
         type: 'value',
         scale: true,
+        axisLabel: {
+            formatter: function (value) {
+                return value / 10000 + '万';
+            }
+        }
     },
     series: [
         // {
