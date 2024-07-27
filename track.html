@@ -3,8 +3,8 @@ layout: default
 title: 更新记录
 ---
 
-<div class="chart" id="postChart"></div>
 <div class="chart" id="wordChart"></div>
+<div class="chart" id="postChart"></div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 <script type="text/javascript">
 var postChart = echarts.init(document.getElementById("postChart"));
@@ -121,7 +121,7 @@ wordChartOption = {
     },
     title: {
         left: 'center',
-        text: '总字数统计',
+        text: '总字数统计（千字）',
     },
     toolbox: {
         feature: {
@@ -139,7 +139,7 @@ wordChartOption = {
         scale: true,
         axisLabel: {
             formatter: function (value) {
-                return value / 10000 + '万';
+                return value / 1000;
             }
         }
     },
