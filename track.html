@@ -14,14 +14,10 @@ var init = new Date(2019, 7 - 1, 23);
 var releaseDayOfWeek = init.getDay();
 var now = new Date();
 var postDates =[
-    {% for post in site.posts reversed %}
-        {{ post.date | date: "new Date(%Y, %-m - 1, %-d)"}},
-    {% endfor %}
+    {{ post_dates }}
 ];
 var postWordCounts = [
-    {% for post in site.posts reversed %}
-        {{ post.content | strip_html | strip_newlines | size}},
-    {% endfor %}
+    {{ post_word_counts }}
 ];
 
 var dates = [];
@@ -35,7 +31,7 @@ var actualPostsCount = 0;
 var expectedWordsCount = 0;
 var actualWordsCount = 0;
 for (
-    var someDay = new Date(init); 
+    var someDay = new Date(init);
     someDay <= now;
     // Get the next date without daylight saving time mess.
     someDay = new Date(someDay.setDate(someDay.getDate() + 1))
@@ -56,12 +52,6 @@ for (
     } else {
         expectedPostsCount = actualPostsCount;
     }
-
-    // if (someDay < new Date()) {
-    //     expectedWordsCount = actualWordsCount;
-    // } else {
-    //     expectedWordsCount += Math.floor(1000 / 7);
-    // }
 
     dates.push([someDay.getFullYear(), someDay.getMonth() + 1, someDay.getDate()].join('/'));
     expectedPosts.push(expectedPostsCount);

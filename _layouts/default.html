@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: "zh-CN" }}">
+<html lang="{{ site.lang }}">
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,21 +15,14 @@
     <meta name="msapplication-TileColor" content="#38800a">
     <meta name="theme-color" content="#38800a">
 
-    {% assign image_name = page.path | remove: "_posts/" | remove: ".md" | append: ".JPG" %}
-    {% assign image_path = "/assets/images/" | append: image_name %}
-    {% for static_file in site.static_files %}
-      {% if static_file.path == image_path %}
-        {% assign exist_image_path = image_path %}
-      {% endif %}
-    {% endfor %}
-    {% if exist_image_path %}
-    <meta property="og:image" content="{{ site.url }}{{ exist_image_path }}">
+    {% if page.exist_image_path %}
+    <meta property="og:image" content="{{ site.url }}{{ page.exist_image_path }}">
     {% else %}
     <meta property="og:image" content="{{ site.url }}/android-chrome-512x512.png">
     {% endif %}
 
 {% seo %}
-    <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -47,9 +40,9 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1><a class="branding" href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name }}</a></h1>
+        <h1><a class="branding" href="/">{{ site.title }}</a></h1>
 
-        <p>{{ site.description | default: site.github.project_tagline }}</p>
+        <p>{{ site.description }}</p>
       </header>
       <section>
 
@@ -63,11 +56,11 @@
             我的网站：<a href="https://nblintao.github.io">个人主页</a> | <a href="/">青菜年糕汤</a> | <a href="https://museums.qcngt.com">故宮展覽通</a> | <a href="https://digest.qcngt.com">人工智能文摘</a> | <a href="/search">中文互联网搜索</a> | <a href="https://invest.qcngt.com">Tao's Investment Manager</a><br>
             友情链接：<a href="https://levy.at">Levy's Ink</a><br>
             Copyright © {{ 'now' | date: "%Y" }} 青菜年糕汤 保留所有权利。
-            <a href="/feed" class="feed" alt="RSS feed"></a>
+            <a href="/feed.xml" class="feed" alt="RSS feed"></a>
         </small></p>
       </footer>
     </div>
-    <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
+    <script src="/assets/js/scale.fix.js"></script>
     {% if site.google_analytics %}
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
