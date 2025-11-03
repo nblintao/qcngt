@@ -1,75 +1,83 @@
 <!DOCTYPE html>
 <html lang="{{ site.lang }}">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#38800a">
-    <meta name="apple-mobile-web-app-title" content="青菜年糕汤">
-    <meta name="application-name" content="青菜年糕汤">
-    <meta name="msapplication-TileColor" content="#38800a">
-    <meta name="theme-color" content="#38800a">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% if page.exist_image_path %}
-    <meta property="og:image" content="{{ site.url }}{{ page.exist_image_path }}">
-    {% else %}
-    <meta property="og:image" content="{{ site.url }}/android-chrome-512x512.png">
-    {% endif %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#38800a">
+  <meta name="apple-mobile-web-app-title" content="青菜年糕汤">
+  <meta name="application-name" content="青菜年糕汤">
+  <meta name="msapplication-TileColor" content="#38800a">
+  <meta name="theme-color" content="#38800a">
 
-{% seo %}
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <!--[if lt IE 9]>
+  {% if page.exist_image_path %}
+  <meta property="og:image" content="{{ site.url }}{{ page.exist_image_path }}">
+  {% else %}
+  <meta property="og:image" content="{{ site.url }}/android-chrome-512x512.png">
+  {% endif %}
+
+  {% seo %}
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
 
-    <script>
-      window.MathJax = {
-        options: {
-        	enableMenu: false,
-        }
-      };
-    </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js"></script>
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1><a class="branding" href="/">{{ site.title }}</a></h1>
+  <script>
+    window.MathJax = {
+      options: {
+        enableMenu: false,
+      }
+    };
+  </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js"></script>
+</head>
 
-        <p>{{ site.description }}</p>
-      </header>
-      <section>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1><a class="branding" href="/">{{ site.title }}</a></h1>
+
+      <p>{{ site.description }}</p>
+    </header>
+    <section>
 
       {{ content }}
 
-      </section>
+    </section>
 
-      <footer>
-        <img class="invert-when-dark" src="/assets/qrcode.jpg" alt="WeChat QR code" />
-        <p><small>
-            我的网站：<a href="https://nblintao.github.io">个人主页</a> | <a href="/">青菜年糕汤</a> | <a href="https://museums.qcngt.com">故宮展覽通</a> | <a href="https://digest.qcngt.com">人工智能文摘</a> | <a href="https://25dgo.qcngt.com">2.5D Go</a> | <a href="/search">中文互联网搜索</a> | <a href="https://invest.qcngt.com">Tao's Investment Manager</a><br>
-            友情链接：<a href="https://levy.at">Levy's Ink</a><br>
-            Copyright © {{ 'now' | date: "%Y" }} 青菜年糕汤 保留所有权利。
-            <a href="/feed.xml" class="feed" alt="RSS feed"></a>
+    <footer>
+      <img class="invert-when-dark" src="/assets/qrcode.jpg" alt="WeChat QR code" />
+      <p><small>
+          我的网站：<a href="https://nblintao.github.io">个人主页</a> | <a href="/">青菜年糕汤</a> | <a
+            href="https://museums.qcngt.com">故宮展覽通</a> | <a href="https://digest.qcngt.com">人工智能文摘</a> | <a
+            href="https://25dgo.qcngt.com">2.5D Go</a> | <a href="/search">中文互联网搜索</a> | <a
+            href="https://invest.qcngt.com">Tao's Investment Manager</a><br>
+          友情链接：<a href="https://levy.at">Levy's Ink</a><br>
+          Copyright © {{ 'now' | date: "%Y" }} 青菜年糕汤 保留所有权利。
+          <a href="/feed.xml" class="feed" alt="RSS feed"></a>
         </small></p>
-      </footer>
-    </div>
-    <script src="/assets/js/scale.fix.js"></script>
-    {% if site.google_analytics %}
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-      ga('create', '{{ site.google_analytics }}', 'auto');
-      ga('send', 'pageview');
-    </script>
-    {% endif %}
-  </body>
+    </footer>
+  </div>
+  <script src="/assets/js/scale.fix.js"></script>
+  {% if site.google_analytics %}
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+    ga('create', '{{ site.google_analytics }}', 'auto');
+    ga('send', 'pageview');
+  </script>
+  {% endif %}
+</body>
+
 </html>
