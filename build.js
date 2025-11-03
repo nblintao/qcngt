@@ -17,14 +17,10 @@ const md = new MarkdownIt({
 // markdown-it 默认要求 emphasis 标记前后有空格或标点，这对中文不友好
 const originalRender = md.render.bind(md);
 md.render = function(src, env) {
-  // 在 CJK 字符和 **/** 之间插入零宽空格，使 markdown-it 能正确识别
-  // 匹配模式：CJK字符 + ** 或 * （开始标记）
-  src = src.replace(/([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])\*\*/g, '$1\u200B**');
-  src = src.replace(/([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])(\*[^\*])/g, '$1\u200B$2');
-
-  // 匹配模式：** 或 * + CJK字符（结束标记）
-  src = src.replace(/\*\*([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])/g, '**\u200B$1');
-  src = src.replace(/([^\*]\*)([\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef])/g, '$1\u200B$2');
+  // 只在 ** 结束标记后面紧跟CJK汉字(非标点)时，在它们之间插入零宽空格
+  // 这样 **text**字 会变成 **text**​字，markdown-it 就能正确识别
+  src = src.replace(/\*\*([\u4e00-\u9fa5])/g, '**\u200B$1');
+  src = src.replace(/([^\*]\*)([\u4e00-\u9fa5])/g, '$1\u200B$2');
 
   return originalRender(src, env);
 };
