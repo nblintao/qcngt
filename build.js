@@ -1,29 +1,12 @@
 const fs = require('fs-extra');
 const path = require('path');
 const matter = require('gray-matter');
-const MarkdownIt = require('markdown-it');
 const { Liquid } = require('liquidjs');
 const sass = require('sass');
+const { createMarkdownRenderer } = require('./lib/markdown-renderer');
 
-// 初始化markdown-it
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-  breaks: false
-});
-
-// 重写 md.render 以支持 CJK 无空格加粗/斜体
-// markdown-it 默认要求 emphasis 标记前后有空格或标点，这对中文不友好
-const originalRender = md.render.bind(md);
-md.render = function(src, env) {
-  // 只在 ** 结束标记后面紧跟CJK汉字(非标点)时，在它们之间插入零宽空格
-  // 这样 **text**字 会变成 **text**​字，markdown-it 就能正确识别
-  src = src.replace(/\*\*([\u4e00-\u9fa5])/g, '**\u200B$1');
-  src = src.replace(/([^\*]\*)([\u4e00-\u9fa5])/g, '$1\u200B$2');
-
-  return originalRender(src, env);
-};
+// 初始化markdown-it (支持CJK加粗)
+const md = createMarkdownRenderer();
 
 // 配置
 const config = {
