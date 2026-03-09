@@ -13,7 +13,7 @@ const config = {
   title: '青菜年糕汤',
   description: '一箪一瓢，一期一会。以文会友，以友辅仁。',
   logo: '/android-chrome-512x512.png',
-  author: '青菜年糕汤',
+  author: '林涛（青菜年糕汤）',
   lang: 'zh-CN',
   url: 'https://qcngt.com',
   google_analytics: 'UA-147274890-1',
