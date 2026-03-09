@@ -166,10 +166,16 @@ ul.downloads {
   color:#222;
 }
 
-section {
+section:not(.footnotes) {
   width:500px;
   float:right;
   padding-bottom:50px;
+}
+
+section.footnotes {
+  font-size: 0.9em;
+  color: var(--sub-content-color);
+  margin-bottom: 2em;
 }
 
 small {
