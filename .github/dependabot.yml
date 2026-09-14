@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Disable scheduled version PRs; security updates have a separate limit.
+    open-pull-requests-limit: 0
+    groups:
+      # Reserved for security updates; the merge workflow verifies this metadata.
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
