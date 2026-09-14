@@ -1,0 +1,191 @@
+# No checkout, PR artifacts, PR caches, or PR code in either job.
+name: Merge Dependabot security updates
+
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [completed]
+
+permissions: {}
+
+concurrency:
+  group: dependabot-security-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+env:
+  DEFAULT_BRANCH: master
+  CI_WORKFLOW: deploy.yml
+
+jobs:
+  inspect:
+    if: >-
+      github.repository == 'nblintao/qcngt' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    outputs:
+      number: ${{ steps.candidate.outputs.number }}
+      sha: ${{ steps.candidate.outputs.sha }}
+      security: ${{ steps.candidate.outputs.eligible == 'true' && steps.metadata.outputs.dependency-group == 'security-updates' && steps.metadata.outputs.package-ecosystem == 'npm_and_yarn' && steps.metadata.outputs.target-branch == 'master' }}
+    steps:
+      - name: Verify the PR and its tested commit
+        id: candidate
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const repo = context.repo;
+            const fullName = `${repo.owner}/${repo.repo}`;
+            const branch = process.env.DEFAULT_BRANCH;
+            const skip = message => core.info(`Not eligible: ${message}`);
+            if (run.event !== 'pull_request' || run.conclusion !== 'success' ||
+                run.actor?.login !== 'dependabot[bot]' || run.head_repository?.full_name !== fullName) {
+              return skip('not a successful same-repository Dependabot PR run');
+            }
+            const { data: workflow } = await github.rest.actions.getWorkflow({
+              ...repo, workflow_id: process.env.CI_WORKFLOW
+            });
+            if (run.workflow_id !== workflow.id || run.path !== workflow.path) {
+              return skip('unexpected CI workflow');
+            }
+            const prs = await github.paginate(github.rest.pulls.list, {
+              ...repo, state: 'open', base: branch,
+              head: `${repo.owner}:${run.head_branch}`, per_page: 100
+            });
+            const matches = prs.filter(pr => pr.head.sha === run.head_sha);
+            if (matches.length !== 1) return skip('no unique open PR for the tested commit');
+            const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number: matches[0].number });
+            if (pr.user.login !== 'dependabot[bot]' || pr.draft || pr.state !== 'open' ||
+                pr.head.repo?.full_name !== fullName || pr.base.repo.full_name !== fullName ||
+                pr.base.ref !== branch || pr.head.sha !== run.head_sha) {
+              return skip('PR identity, branch or commit changed');
+            }
+            const commits = await github.paginate(github.rest.pulls.listCommits, {
+              ...repo, pull_number: pr.number, per_page: 100
+            });
+            if (!commits.length || commits.length !== pr.commits ||
+                commits[commits.length - 1].sha !== pr.head.sha ||
+                commits.some(c => c.author?.login !== 'dependabot[bot]' || !c.commit.verification?.verified)) {
+              return skip('all commits must be verified Dependabot commits');
+            }
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              ...repo, pull_number: pr.number, per_page: 100
+            });
+            if (!files.length || files.length !== pr.changed_files || files.some(f =>
+                !['package.json', 'package-lock.json'].includes(f.filename) || f.status !== 'modified')) {
+              return skip('changes outside the existing npm manifest/lockfile');
+            }
+            // The successful CI must use the current trusted workflow and security group.
+            // In particular, an old PR cannot skip the new validation or change its rules.
+            for (const path of [workflow.path, '.github/dependabot.yml']) {
+              const { data: trusted } = await github.rest.repos.getContent({ ...repo, path, ref: branch });
+              const { data: tested } = await github.rest.repos.getContent({ ...repo, path, ref: pr.head.sha });
+              if (!trusted.sha || trusted.sha !== tested.sha) return skip('stale CI or Dependabot configuration');
+            }
+            // fetch-metadata expects a pull_request payload. Supply a fresh API response,
+            // never a PR artifact or a checked-out script, and leave the real event intact.
+            const fs = require('fs');
+            const path = require('path');
+            fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'dependabot-pr.json'),
+              JSON.stringify({ pull_request: pr, repository: context.payload.repository }));
+            core.setOutput('number', pr.number);
+            core.setOutput('sha', pr.head.sha);
+            core.setOutput('eligible', 'true');
+      - name: Read verified Dependabot metadata
+        if: steps.candidate.outputs.eligible == 'true'
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3
+        env:
+          GITHUB_EVENT_PATH: ${{ runner.temp }}/dependabot-pr.json
+        # alert-lookup needs an extra PAT/App token. Instead, use the official
+        # applies-to: security-updates group and its signed commit metadata.
+        # Keep all fetch-metadata signature/author verification enabled.
+
+  merge:
+    needs: inspect
+    if: needs.inspect.outputs.security == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+      contents: write
+      pull-requests: read
+      statuses: read
+    steps:
+      - name: Recheck CI, squash merge, and deploy the default branch
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          PR_NUMBER: ${{ needs.inspect.outputs.number }}
+          TESTED_SHA: ${{ needs.inspect.outputs.sha }}
+          BUILD_JOB: 'build'
+          REQUIRED_STEPS: '["Install dependencies", "Build site"]'
+        with:
+          retries: 3
+          script: |
+            const repo = context.repo;
+            const fullName = `${repo.owner}/${repo.repo}`;
+            const branch = process.env.DEFAULT_BRANCH;
+            const sha = process.env.TESTED_SHA;
+            const pull_number = Number(process.env.PR_NUMBER);
+            const eventRun = context.payload.workflow_run;
+            const skip = message => core.info(`Not merging: ${message}`);
+            const { data: run } = await github.rest.actions.getWorkflowRun({ ...repo, run_id: eventRun.id });
+            if (run.status !== 'completed' || run.conclusion !== 'success' ||
+                run.event !== 'pull_request' || run.head_sha !== sha ||
+                run.run_attempt !== eventRun.run_attempt || run.workflow_id !== eventRun.workflow_id) {
+              return skip('the exact CI run/attempt is no longer successful');
+            }
+            const { data: recent } = await github.rest.actions.listWorkflowRuns({
+              ...repo, workflow_id: run.workflow_id, event: 'pull_request', head_sha: sha, per_page: 100
+            });
+            if (recent.workflow_runs[0]?.id !== run.id) return skip('a newer CI run exists');
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              ...repo, run_id: run.id, filter: 'latest', per_page: 100
+            });
+            const builds = jobs.filter(job => job.name === process.env.BUILD_JOB);
+            const requiredSteps = JSON.parse(process.env.REQUIRED_STEPS);
+            if (builds.length !== 1 || builds.some(job => job.status !== 'completed' ||
+                job.conclusion !== 'success' || requiredSteps.some(name =>
+                  !job.steps.some(step => step.name === name && step.status === 'completed' && step.conclusion === 'success')))) {
+              return skip('install/build/test did not all complete successfully');
+            }
+            const { data: pr } = await github.rest.pulls.get({ ...repo, pull_number });
+            if (pr.user.login !== 'dependabot[bot]' || pr.state !== 'open' || pr.draft ||
+                pr.head.repo?.full_name !== fullName || pr.base.repo.full_name !== fullName ||
+                pr.head.sha !== sha || pr.base.ref !== branch ||
+                pr.mergeable !== true || pr.mergeable_state !== 'clean') {
+              return skip('PR changed or GitHub merge requirements are not satisfied');
+            }
+            // Respect other CI/status checks too, including checks attached to the PR merge ref.
+            for (const ref of new Set([sha, pr.merge_commit_sha].filter(Boolean))) {
+              const checks = await github.paginate(github.rest.checks.listForRef, {
+                ...repo, ref, filter: 'latest', per_page: 100
+              });
+              if (checks.some(check => check.status !== 'completed' ||
+                  !['success', 'neutral', 'skipped'].includes(check.conclusion))) {
+                return skip('another check is pending or unsuccessful');
+              }
+              const { data: status } = await github.rest.repos.getCombinedStatusForRef({ ...repo, ref });
+              if (status.total_count > 0 && status.state !== 'success') {
+                return skip('another commit status is pending or unsuccessful');
+              }
+            }
+            // The SHA precondition prevents merging an untested push racing these checks.
+            // This endpoint enforces branch protections; no admin bypass or auto-approval.
+            const { data: result } = await github.rest.pulls.merge({
+              ...repo, pull_number, sha, merge_method: 'squash'
+            });
+            if (!result.merged) throw new Error(`Merge refused: ${result.message}`);
+            core.info(`Merged PR #${pull_number} as ${result.sha}`);
+            // GITHUB_TOKEN merges suppress push-triggered runs. Dispatch the existing
+            // deployment workflow on the DEFAULT branch only, rebuilding merged code.
+            await github.rest.actions.createWorkflowDispatch({
+              ...repo, workflow_id: process.env.CI_WORKFLOW, ref: branch
+            });
+            core.info(`Dispatched ${process.env.CI_WORKFLOW} on ${branch}`);
