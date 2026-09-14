@@ -1,0 +1,64 @@
+# Temporary verification workflow; removed before merging the security fix.
+name: Validate js-yaml security fix
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.head_ref == 'codex/js-yaml-security-fix'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Prepare compatible security patches
+        run: |
+          cp package-lock.json /tmp/js-yaml-lock-before.json
+          node <<'NODE'
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          pkg.overrides['gray-matter']['js-yaml'] = '^3.15.2';
+          pkg.overrides.mocha['js-yaml'] = '^4.3.2';
+          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          NODE
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Verify and report the exact lockfile changes
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert/strict');
+          const before = JSON.parse(fs.readFileSync('/tmp/js-yaml-lock-before.json', 'utf8'));
+          const after = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          const expected = {
+            'node_modules/gray-matter/node_modules/js-yaml': '3.15.2',
+            'node_modules/mocha/node_modules/js-yaml': '4.3.2'
+          };
+          const entries = Object.fromEntries(Object.keys(expected).map(path => [path, after.packages[path]]));
+          console.log('SECURITY_FIX_LOCK_ENTRIES=' + JSON.stringify(entries));
+          for (const [path, version] of Object.entries(expected)) {
+            assert.equal(after.packages[path].version, version);
+          }
+          for (const path of new Set([...Object.keys(before.packages), ...Object.keys(after.packages)])) {
+            if (!(path in expected)) assert.deepEqual(after.packages[path], before.packages[path], path);
+          }
+          const {packages: oldPackages, ...oldMeta} = before;
+          const {packages: newPackages, ...newMeta} = after;
+          assert.deepEqual(newMeta, oldMeta);
+          console.log('Only the two js-yaml lockfile entries changed.');
+          NODE
+      - name: Install patched dependencies
+        run: npm ci
+      - name: Run existing tests
+        run: npm test
+      - name: Build with patched dependencies
+        run: npm run build
