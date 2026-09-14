@@ -14,13 +14,10 @@ jobs:
         with:
           script: |
             const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: 36 });
-            require('fs').writeFileSync(`${process.env.RUNNER_TEMP}/dependabot-pr.json`,
+            require('fs').writeFileSync(process.env.GITHUB_EVENT_PATH,
               JSON.stringify({ pull_request: pr, repository: context.payload.repository }));
       - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98
         id: metadata
-        env:
-          GITHUB_EVENT_PATH: ${{ runner.temp }}/dependabot-pr.json
-          GITHUB_EVENT_NAME: workflow_run
       - name: Verify official action outputs
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         env:
