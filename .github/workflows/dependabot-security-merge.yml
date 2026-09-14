@@ -1,4 +1,4 @@
-# No checkout, PR artifacts, PR caches, or PR code in either job.
+# No PR checkout, PR artifacts, PR caches, or PR code in either job.
 name: Merge Dependabot security updates
 
 on:
@@ -89,21 +89,41 @@ jobs:
               if (!trusted.sha || trusted.sha !== tested.sha) return skip('stale CI or Dependabot configuration');
             }
             // fetch-metadata expects a pull_request payload. Supply a fresh API response,
-            // never a PR artifact or a checked-out script. Adapt only this read-only job's
-            // on-disk event; the separate merge job receives the original workflow_run event.
+            // never a PR artifact or a checked-out PR script.
             const fs = require('fs');
-            fs.writeFileSync(process.env.GITHUB_EVENT_PATH,
+            const path = require('path');
+            fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'dependabot-pr.json'),
               JSON.stringify({ pull_request: pr, repository: context.payload.repository }));
             core.setOutput('number', pr.number);
             core.setOutput('sha', pr.head.sha);
             core.setOutput('eligible', 'true');
+      # fetch-metadata only accepts PR events. Run its pinned, unmodified
+      # distribution with the verified API payload; Runner resets GITHUB_*
+      # variables before each step, so set the event path in the child process.
+      - name: Fetch the official metadata action (not PR code)
+        if: steps.candidate.outputs.eligible == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: dependabot/fetch-metadata
+          ref: 25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3
+          path: .dependabot-metadata
+          persist-credentials: false
+      - name: Use the official metadata action's Node.js runtime
+        if: steps.candidate.outputs.eligible == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - name: Read verified Dependabot metadata
         if: steps.candidate.outputs.eligible == 'true'
         id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3
+        env:
+          METADATA_EVENT_PATH: ${{ runner.temp }}/dependabot-pr.json
+          INPUT_GITHUB-TOKEN: ${{ github.token }}
+          INPUT_SKIP-COMMIT-VERIFICATION: 'false'
+          INPUT_SKIP-VERIFICATION: 'false'
+        run: GITHUB_EVENT_PATH="$METADATA_EVENT_PATH" node .dependabot-metadata/dist/index.js
         # alert-lookup needs an extra PAT/App token. Instead, use the official
         # applies-to: security-updates group and its signed commit metadata.
-        # Keep all fetch-metadata signature/author verification enabled.
 
   merge:
     needs: inspect

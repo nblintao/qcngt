@@ -14,10 +14,25 @@ jobs:
         with:
           script: |
             const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: 36 });
-            require('fs').writeFileSync(process.env.GITHUB_EVENT_PATH,
+            require('fs').writeFileSync(`${process.env.RUNNER_TEMP}/dependabot-pr.json`,
               JSON.stringify({ pull_request: pr, repository: context.payload.repository }));
-      - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98
+      - uses: actions/checkout@v4
+        with:
+          repository: dependabot/fetch-metadata
+          ref: 25dd0e34f4fe68f24cc83900b1fe3fe149efef98
+          path: .dependabot-metadata
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run the official metadata distribution
         id: metadata
+        env:
+          METADATA_EVENT_PATH: ${{ runner.temp }}/dependabot-pr.json
+          INPUT_GITHUB-TOKEN: ${{ github.token }}
+          INPUT_SKIP-COMMIT-VERIFICATION: 'false'
+          INPUT_SKIP-VERIFICATION: 'false'
+        run: GITHUB_EVENT_PATH="$METADATA_EVENT_PATH" node .dependabot-metadata/dist/index.js
       - name: Verify official action outputs
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         env:
