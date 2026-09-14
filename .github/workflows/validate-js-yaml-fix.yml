@@ -24,14 +24,34 @@ jobs:
       - name: Prepare compatible security patches
         run: |
           cp package-lock.json /tmp/js-yaml-lock-before.json
+          npm view js-yaml@3.15.2 --json > /tmp/js-yaml-v3.json
+          npm view js-yaml@4.3.2 --json > /tmp/js-yaml-v4.json
           node <<'NODE'
           const fs = require('fs');
+          const assert = require('assert/strict');
           const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
           pkg.overrides['gray-matter']['js-yaml'] = '^3.15.2';
           pkg.overrides.mocha['js-yaml'] = '^4.3.2';
           fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          for (const [parent, version, metadataFile] of [
+            ['gray-matter', '3.15.2', '/tmp/js-yaml-v3.json'],
+            ['mocha', '4.3.2', '/tmp/js-yaml-v4.json']
+          ]) {
+            const metadata = JSON.parse(fs.readFileSync(metadataFile, 'utf8'));
+            assert.equal(metadata.name, 'js-yaml');
+            assert.equal(metadata.version, version);
+            assert.equal(metadata.dist.tarball, 'https://registry.npmjs.org/js-yaml/-/js-yaml-' + version + '.tgz');
+            assert.match(metadata.dist.integrity, /^sha512-[A-Za-z0-9+/]+=*$/);
+            const entry = lock.packages['node_modules/' + parent + '/node_modules/js-yaml'];
+            assert.deepEqual(metadata.dependencies, entry.dependencies);
+            assert.deepEqual(metadata.bin, entry.bin);
+            entry.version = version;
+            entry.resolved = metadata.dist.tarball;
+            entry.integrity = metadata.dist.integrity;
+          }
+          fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2) + '\n');
           NODE
-          npm update js-yaml --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Verify and report the exact lockfile changes
         run: |
           node <<'NODE'
@@ -57,7 +77,9 @@ jobs:
           console.log('Only the two js-yaml lockfile entries changed.');
           NODE
       - name: Install patched dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm ls js-yaml --all
       - name: Run existing tests
         run: npm test
       - name: Build with patched dependencies
