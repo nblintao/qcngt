@@ -31,7 +31,7 @@ jobs:
           pkg.overrides.mocha['js-yaml'] = '^4.3.2';
           fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           NODE
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm update js-yaml --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Verify and report the exact lockfile changes
         run: |
           node <<'NODE'
